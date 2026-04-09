@@ -1,0 +1,65 @@
+name: LGTM Approve
+
+on:
+  issue_comment:
+    types: [created]
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  approve:
+    if: ${{ github.event.issue.pull_request }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Approve PR on /lgtm from maintainers
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const body = (context.payload.comment.body || "").trim().toLowerCase();
+            if (body !== "/lgtm") {
+              core.info("Comment is not /lgtm; skipping.");
+              return;
+            }
+
+            const owner = context.repo.owner;
+            const repo = context.repo.repo;
+            const pull_number = context.payload.issue.number;
+            const commenter = context.payload.comment.user.login;
+
+            const permissionResp = await github.rest.repos.getCollaboratorPermissionLevel({
+              owner,
+              repo,
+              username: commenter
+            });
+
+            const allowed = ["admin", "maintain", "write"];
+            if (!allowed.includes(permissionResp.data.permission)) {
+              core.setFailed(
+                `/${body.slice(1)} rejected: @${commenter} has '${permissionResp.data.permission}' permission`
+              );
+              return;
+            }
+
+            const prResp = await github.rest.pulls.get({
+              owner,
+              repo,
+              pull_number
+            });
+
+            const prAuthor = prResp.data.user.login;
+            if (prAuthor === commenter) {
+              core.setFailed("PR author cannot self-approve via /lgtm.");
+              return;
+            }
+
+            await github.rest.pulls.createReview({
+              owner,
+              repo,
+              pull_number,
+              event: "APPROVE",
+              body: `LGTM acknowledged from @${commenter}.`
+            });
+
+            core.info(`Approved PR #${pull_number} based on /lgtm by @${commenter}.`);

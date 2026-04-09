@@ -1,0 +1,6 @@
+# Auto-request reviews for all pull requests.
+# Add/remove GitHub users or teams (with write access) as your reviewer group grows.
+* @SoumyaRaikwar
+
+# ADR files can have a focused reviewer set if needed.
+/docs/adr/* @SoumyaRaikwar
