@@ -30,3 +30,7 @@ func (s *PostgresStore) Ping() error {
 func (s *PostgresStore) Close() error {
 	return s.db.Close()
 }
+
+func (s *PostgresStore) DB() *sql.DB {
+	return s.db
+}
