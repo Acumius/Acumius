@@ -189,7 +189,12 @@ func (s *ValkeyStore) Delete(ctx context.Context, id uuid.UUID) error {
 		return fmt.Errorf("valkey get index: %w", err)
 	}
 
-	err = s.client.Do(ctx, s.client.B().Del().Key(indexKey, actualKey).Build()).Error()
+	err = s.client.Do(ctx, s.client.B().Del().Key(indexKey).Build()).Error()
+	if err != nil {
+		return fmt.Errorf("valkey del index: %w", err)
+	}
+
+	err = s.client.Do(ctx, s.client.B().Del().Key(actualKey).Build()).Error()
 	if err != nil {
 		return fmt.Errorf("valkey del: %w", err)
 	}
