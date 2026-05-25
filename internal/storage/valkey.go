@@ -12,6 +12,10 @@ type ValkeyStore struct {
 	client valkey.Client
 }
 
+func (s *ValkeyStore) Client() valkey.Client {
+	return s.client
+}
+
 func NewValkeyStore(connectionString string) (*ValkeyStore, error) {
 	addr := connectionString
 	if strings.HasPrefix(addr, "valkey://") {
