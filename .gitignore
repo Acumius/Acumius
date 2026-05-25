@@ -1,1 +1,53 @@
+# Binaries
+bin/
+*.exe
+*.dll
+*.so
+*.dylib
+acumius
+
+# Test
+*.test
+*.out
+coverage.html
+coverage.out
+
+# Go
+/vendor/
 .gocache/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# Docker
+*.log
+
+# Node (for UI)
+node_modules/
+.next/
+out/
+dist/
+*.lock
+
+# Python (for SDK)
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+dist/
+build/
+
+# Temporary
+tmp/
+temp/
+*.tmp
