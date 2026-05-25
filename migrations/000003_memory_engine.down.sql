@@ -1,0 +1,7 @@
+-- migrations/000003_memory_engine.down.sql
+
+DROP TABLE IF EXISTS policies CASCADE;
+DROP TABLE IF EXISTS audit_log CASCADE;
+DROP TABLE IF EXISTS pii_registry CASCADE;
+DROP TABLE IF EXISTS namespace_acl CASCADE;
+DROP TABLE IF EXISTS memories CASCADE;
