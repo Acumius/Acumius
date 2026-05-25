@@ -1,64 +1,32 @@
 package config
 
 import (
-	"os"
+	"log"
 	"time"
-)
 
-const (
-	envHTTPAddr          = "ACUMIUS_HTTP_ADDR"
-	envReadHeaderTimeout = "ACUMIUS_HTTP_READ_HEADER_TIMEOUT"
-	envReadTimeout       = "ACUMIUS_HTTP_READ_TIMEOUT"
-	envWriteTimeout      = "ACUMIUS_HTTP_WRITE_TIMEOUT"
-	envIdleTimeout       = "ACUMIUS_HTTP_IDLE_TIMEOUT"
-	envShutdownTimeout   = "ACUMIUS_SHUTDOWN_TIMEOUT"
+	"github.com/caarlos0/env/v11"
 )
 
 // Config is the runtime configuration for the Acumius service.
 type Config struct {
-	HTTPAddr          string
-	ReadHeaderTimeout time.Duration
-	ReadTimeout       time.Duration
-	WriteTimeout      time.Duration
-	IdleTimeout       time.Duration
-	ShutdownTimeout   time.Duration
+	ServerPort  string `env:"ACUMIUS_SERVER_PORT" envDefault:"8080"`
+	DatabaseURL string `env:"ACUMIUS_DATABASE_URL" envDefault:"postgres://acumius:acumius@localhost:5432/acumius?sslmode=disable"`
+	ValkeyURL   string `env:"ACUMIUS_VALKEY_URL" envDefault:"localhost:6379"`
+	LogLevel    string `env:"ACUMIUS_LOG_LEVEL" envDefault:"info"`
+	Environment string `env:"ACUMIUS_ENV" envDefault:"development"`
+
+	ReadHeaderTimeout time.Duration `env:"ACUMIUS_HTTP_READ_HEADER_TIMEOUT" envDefault:"5s"`
+	ReadTimeout       time.Duration `env:"ACUMIUS_HTTP_READ_TIMEOUT" envDefault:"10s"`
+	WriteTimeout      time.Duration `env:"ACUMIUS_HTTP_WRITE_TIMEOUT" envDefault:"15s"`
+	IdleTimeout       time.Duration `env:"ACUMIUS_HTTP_IDLE_TIMEOUT" envDefault:"60s"`
+	ShutdownTimeout   time.Duration `env:"ACUMIUS_SHUTDOWN_TIMEOUT" envDefault:"10s"`
 }
 
 // Load reads configuration from environment variables and applies defaults.
 func Load() Config {
-	return Config{
-		HTTPAddr:          getEnv(envHTTPAddr, ":8080"),
-		ReadHeaderTimeout: parseDurationEnv(envReadHeaderTimeout, "5s"),
-		ReadTimeout:       parseDurationEnv(envReadTimeout, "10s"),
-		WriteTimeout:      parseDurationEnv(envWriteTimeout, "15s"),
-		IdleTimeout:       parseDurationEnv(envIdleTimeout, "60s"),
-		ShutdownTimeout:   parseDurationEnv(envShutdownTimeout, "10s"),
+	var cfg Config
+	if err := env.Parse(&cfg); err != nil {
+		log.Fatalf("failed to load config: %v", err)
 	}
-}
-
-func getEnv(key, fallback string) string {
-	if value, ok := os.LookupEnv(key); ok && value != "" {
-		return value
-	}
-
-	return fallback
-}
-
-func parseDurationEnv(key, fallback string) time.Duration {
-	value := getEnv(key, fallback)
-	parsed, err := time.ParseDuration(value)
-	if err != nil {
-		return mustParseDuration(fallback)
-	}
-
-	return parsed
-}
-
-func mustParseDuration(value string) time.Duration {
-	parsed, err := time.ParseDuration(value)
-	if err != nil {
-		panic(err)
-	}
-
-	return parsed
+	return cfg
 }

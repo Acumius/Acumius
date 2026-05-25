@@ -1,30 +1,80 @@
-GO ?= go
-GO_PACKAGES := ./...
-GOCACHE ?= $(CURDIR)/.gocache
+.PHONY: all build test lint fmt check up down migrate migrate-create clean install dev
 
-.PHONY: fmt fmt-check lint test check
+BINARY_NAME=acumius
+MAIN_PATH=./cmd/acumius
+DOCKER_COMPOSE=docker-compose
 
-fmt:
-	GOCACHE=$(GOCACHE) $(GO) fmt $(GO_PACKAGES)
+all: check
 
-fmt-check:
-	@files="$$(find . -type f -name '*.go' -not -path './vendor/*' -not -path './.gocache/*')"; \
-	if [ -z "$$files" ]; then \
-		echo "No Go files to check."; \
-		exit 0; \
-	fi; \
-	unformatted="$$(gofmt -l $$files)"; \
-	if [ -n "$$unformatted" ]; then \
-		echo "Unformatted files detected:"; \
-		echo "$$unformatted"; \
-		exit 1; \
-	fi; \
-	echo "Formatting check passed."
+build:
+	go build -o bin/$(BINARY_NAME) $(MAIN_PATH)
 
-lint:
-	GOCACHE=$(GOCACHE) $(GO) vet $(GO_PACKAGES)
+install:
+	go mod download
+	go install github.com/golang-migrate/migrate/v4/cmd/migrate@latest
+
+dev:
+	go run $(MAIN_PATH)
+
+dev-up:
+	$(DOCKER_COMPOSE) up -d postgres valkey
+
+up:
+	$(DOCKER_COMPOSE) up -d
+
+down:
+	$(DOCKER_COMPOSE) down
+
+down-volumes:
+	$(DOCKER_COMPOSE) down -v
+
+migrate:
+	migrate -path ./migrations -database $(ACUMIUS_DATABASE_URL) up
+
+migrate-down:
+	migrate -path ./migrations -database $(ACUMIUS_DATABASE_URL) down
+
+migrate-create:
+	migrate create -ext sql -dir ./migrations -seq $(name)
 
 test:
-	GOCACHE=$(GOCACHE) $(GO) test $(GO_PACKAGES)
+	go test -v -p 1 -count=1 -race ./...
+
+test-coverage:
+	go test -p 1 -count=1 -coverprofile=coverage.out ./...
+	go tool cover -html=coverage.out -o coverage.html
+
+lint:
+	go vet ./...
+	golangci-lint run
+
+fmt:
+	go fmt ./...
+
+fmt-check:
+	@test -z "$$(gofmt -l .)" || (echo "Files need formatting:"; gofmt -l .; exit 1)
 
 check: fmt-check lint test
+
+bench:
+	go test -bench=. -benchmem ./...
+
+clean:
+	rm -rf bin/
+	rm -f coverage.out coverage.html
+
+help:
+	@echo "Available targets:"
+	@echo "  make build          - Build the binary"
+	@echo "  make dev            - Run in development mode"
+	@echo "  make up             - Start all services with docker-compose"
+	@echo "  make down           - Stop all services"
+	@echo "  make migrate        - Run database migrations"
+	@echo "  make migrate-create - Create a new migration (name=...)"
+	@echo "  make test           - Run tests"
+	@echo "  make test-coverage  - Run tests with coverage report"
+	@echo "  make lint           - Run linters"
+	@echo "  make fmt            - Format code"
+	@echo "  make check          - Run fmt-check, lint, and test"
+	@echo "  make bench          - Run benchmarks"
+	@echo "  make clean          - Clean build artifacts"

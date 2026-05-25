@@ -11,15 +11,31 @@ import (
 
 	"github.com/Acumius/Acumius/internal/api"
 	"github.com/Acumius/Acumius/internal/config"
+	"github.com/Acumius/Acumius/internal/storage"
 )
 
 func main() {
 	logger := slog.With("service", "acumius")
 
 	cfg := config.Load()
+
+	pg, err := storage.NewPostgresStore(cfg.DatabaseURL)
+	if err != nil {
+		logger.Error("failed to connect to postgres", "error", err)
+	} else {
+		defer pg.Close()
+	}
+
+	vk, err := storage.NewValkeyStore(cfg.ValkeyURL)
+	if err != nil {
+		logger.Error("failed to connect to valkey", "error", err)
+	} else {
+		defer vk.Close()
+	}
+
 	server := &http.Server{
-		Addr:              cfg.HTTPAddr,
-		Handler:           api.NewMux(),
+		Addr:              ":" + cfg.ServerPort,
+		Handler:           api.NewMux(pg, vk),
 		ReadHeaderTimeout: cfg.ReadHeaderTimeout,
 		ReadTimeout:       cfg.ReadTimeout,
 		WriteTimeout:      cfg.WriteTimeout,
@@ -31,7 +47,7 @@ func main() {
 
 	errCh := make(chan error, 1)
 	go func() {
-		logger.Info("server listening", "addr", cfg.HTTPAddr)
+		logger.Info("server listening", "port", cfg.ServerPort)
 		if err := server.ListenAndServe(); err != nil && !errors.Is(err, http.ErrServerClosed) {
 			errCh <- err
 		}
