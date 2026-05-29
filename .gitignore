@@ -51,3 +51,4 @@ build/
 tmp/
 temp/
 *.tmp
+archive/
