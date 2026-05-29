@@ -2,7 +2,6 @@ package trust
 
 import (
 	"context"
-	"crypto/ed25519"
 	"fmt"
 
 	"github.com/Acumius/Acumius/internal/memory"
@@ -30,7 +29,7 @@ func (a *PortAdapter) VerifySignature(ctx context.Context, agentDID string, memo
 		return fmt.Errorf("get agent: %w", err)
 	}
 
-	if !ed25519.Verify(agent.PublicKey, content, signature) {
+	if !VerifyMemorySignature(agent.PublicKey, memoryID.String(), content, signature) {
 		return fmt.Errorf("invalid signature")
 	}
 
@@ -54,13 +53,27 @@ func (a *PortAdapter) IsAgentActive(ctx context.Context, agentDID string) (bool,
 }
 
 func (a *PortAdapter) GetAttestationsForMemory(ctx context.Context, memoryID uuid.UUID) ([]memory.AttestationRecord, error) {
-	// If attestation is needed here, assuming AttestationStore has a method.
-	// For now, if the method isn't fully implemented in Phase 2, return empty.
-	// In the real phase 2, it exists or we mock it.
-	return nil, nil // Placeholder depending on actual phase 2 completion
+	attestations, err := a.attestation.ListByMemory(ctx, memoryID.String())
+	if err != nil {
+		return nil, fmt.Errorf("list attestations: %w", err)
+	}
+
+	var records []memory.AttestationRecord
+	for _, att := range attestations {
+		id, _ := uuid.Parse(att.ID)
+		memID, _ := uuid.Parse(att.MemoryID)
+		records = append(records, memory.AttestationRecord{
+			ID:        id,
+			AgentDID:  att.AgentDID,
+			MemoryID:  memID,
+			Signature: att.Signature,
+			Timestamp: att.CreatedAt,
+		})
+	}
+
+	return records, nil
 }
 
 func (a *PortAdapter) RecordEvent(ctx context.Context, agentDID string, eventType string, delta int, description string) error {
-	// Call to reputation engine.
-	return nil // Placeholder
+	return a.reputation.LogEvent(ctx, agentDID, eventType, delta)
 }
