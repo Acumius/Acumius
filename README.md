@@ -340,27 +340,13 @@ We welcome contributions! Please read [CONTRIBUTING.md](CONTRIBUTING.md) for:
 
 ---
 
-## Community
-
-- 💬 [Discord](https://discord.gg/acumius)
-- 🐦 [Twitter/X](https://x.com/acumius)
-- 📧 [Security reports](mailto:security@acumius.dev)
-- 📋 [Discussions](https://github.com/Acumius/Acumius/discussions)
 
 ---
 
-## Security
-
-See [SECURITY.md](SECURITY.md) for:
-- Vulnerability reporting process
-- Security boundaries and threat model
-- Known limitations and recommended layered defenses
 
 ---
 
-## License
 
-MIT License — see [LICENSE](LICENSE) for details.
 
 ---
 
