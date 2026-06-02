@@ -46,7 +46,7 @@ jobs:
 
       - name: Setup Database
         run: |
-          go install github.com/golang-migrate/migrate/v4/cmd/migrate@latest
+          go install -tags 'postgres' github.com/golang-migrate/migrate/v4/cmd/migrate@latest
           migrate -path ./migrations -database "postgres://acumius:acumius@localhost:5432/acumius?sslmode=disable" up
         env:
           ACUMIUS_DATABASE_URL: "postgres://acumius:acumius@localhost:5432/acumius?sslmode=disable"
