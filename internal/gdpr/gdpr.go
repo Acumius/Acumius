@@ -62,7 +62,7 @@ func (s *Service) Export(ctx context.Context, agentDID string) (json.RawMessage,
 		if err := rows.Scan(&id, &mType, &namespace, &content, &createdAt); err != nil {
 			return nil, fmt.Errorf("scan memory: %w", err)
 		}
-		
+
 		results = append(results, map[string]interface{}{
 			"id":         id,
 			"type":       mType,
