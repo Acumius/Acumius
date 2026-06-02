@@ -1,3 +1,4 @@
+import Image from "next/image"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
@@ -7,11 +8,14 @@ import { AlertTriangle, UserMinus, RefreshCw } from "lucide-react"
 export default function GDPRTools() {
   return (
     <div className="flex flex-col gap-8">
-      <div>
-        <h1 className="text-3xl font-bold tracking-tight">GDPR Compliance Tools</h1>
-        <p className="text-muted-foreground mt-2">
-          Execute data subjects' rights including Right to Forget and Data Rectification.
-        </p>
+      <div className="flex items-center gap-4">
+        <Image src="/logo.png" alt="Acumius Logo" width={48} height={48} className="rounded-lg object-contain bg-white p-1" />
+        <div>
+          <h1 className="text-3xl font-bold tracking-tight">GDPR Compliance Tools</h1>
+          <p className="text-muted-foreground mt-2">
+            Execute data subjects' rights including Right to Forget and Data Rectification.
+          </p>
+        </div>
       </div>
 
       <div className="grid gap-8 md:grid-cols-2">
