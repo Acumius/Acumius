@@ -115,7 +115,7 @@ func TestMemoryHandler_SearchMemory(t *testing.T) {
 	// Wait, we need the handler.SearchMemory
 	handler.SearchMemory(rr, req)
 
-	// Note: Memory Router's Search currently relies on the searcher internally. 
+	// Note: Memory Router's Search currently relies on the searcher internally.
 	// The mock store is mapped to backend(type) for Search. Wait, in memory/router.go, Search uses HybridSearcher.
 	// We need to ensure we don't panic if Search is called on Router.
 }
