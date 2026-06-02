@@ -44,10 +44,10 @@ func TestTrustAPIHandlers(t *testing.T) {
 
 	// Cleanup test data
 	cleanup := func() {
-		_, _ = db.ExecContext(ctx, "DELETE FROM verifications")
-		_, _ = db.ExecContext(ctx, "DELETE FROM attestations")
-		_, _ = db.ExecContext(ctx, "DELETE FROM reputation_events")
-		_, _ = db.ExecContext(ctx, "DELETE FROM agents")
+		_, err := db.ExecContext(ctx, "TRUNCATE agents CASCADE")
+		if err != nil {
+			t.Logf("Failed to truncate agents: %v", err)
+		}
 	}
 	cleanup()
 	defer cleanup()
