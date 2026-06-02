@@ -81,3 +81,19 @@ func (s *Service) Redact(ctx context.Context, namespace string, piiTypes []strin
 	// For this phase, we update the PII registry to mark them as redacted.
 	return 0, nil
 }
+
+// Rectify corrects an inaccurate memory.
+func (s *Service) Rectify(ctx context.Context, memoryID string, correction json.RawMessage) error {
+	res, err := s.db.ExecContext(ctx, "UPDATE memories SET content = $1, updated_at = NOW() WHERE id = $2 AND deleted_at IS NULL", correction, memoryID)
+	if err != nil {
+		return fmt.Errorf("update memory: %w", err)
+	}
+	rows, err := res.RowsAffected()
+	if err != nil {
+		return fmt.Errorf("rows affected: %w", err)
+	}
+	if rows == 0 {
+		return fmt.Errorf("memory not found or already deleted")
+	}
+	return nil
+}

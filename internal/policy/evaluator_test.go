@@ -23,6 +23,11 @@ func (m *mockStore) GetPolicies(ctx context.Context, agentDID string) ([]policy.
 	return match, nil
 }
 
+func (m *mockStore) SavePolicy(ctx context.Context, p policy.Policy) error {
+	m.policies = append(m.policies, p)
+	return nil
+}
+
 func TestEvaluator_Evaluate_Allow(t *testing.T) {
 	store := &mockStore{
 		policies: []policy.Policy{

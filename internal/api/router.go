@@ -5,7 +5,11 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/Acumius/Acumius/internal/audit"
+	"github.com/Acumius/Acumius/internal/gdpr"
+	"github.com/Acumius/Acumius/internal/mcp"
 	"github.com/Acumius/Acumius/internal/memory"
+	"github.com/Acumius/Acumius/internal/policy"
 	"github.com/Acumius/Acumius/internal/storage"
 )
 
@@ -37,13 +41,46 @@ func RegisterRoutes(mux *http.ServeMux, pg *storage.PostgresStore, vk *storage.V
 		searcher := memory.NewHybridSearcher(pg.DB(), dummyEmbedder)
 		pgStore := memory.NewPostgresStore(pg.DB(), searcher)
 		vkStore := memory.NewValkeyStore(vk.Client(), 24*time.Hour)
+		// Initialize Trust components (Placeholder)
+		auditLogger := audit.NewLogger(pg.DB())
+		policyStore := policy.NewPostgresStore(pg.DB())
+		policyCache := policy.NewValkeyCache(vk.Client())
+		evaluator := policy.NewEvaluator(policyCache, policyStore)
+		gdprService := gdpr.NewService(pg.DB())
 
-		// Pass nil for TrustPort in Phase 1 (Trust integration fully operational in Phase 2)
+		// Create Handlers
 		memRouter := memory.NewRouter(pgStore, vkStore, nil)
 		memHandler := NewMemoryHandler(memRouter)
+		policyHandler := NewPolicyHandler(policyStore, evaluator)
+		auditHandler := NewAuditHandler(auditLogger)
+		gdprHandler := NewGDPRHandler(gdprService)
 
-		// Memory Engine Endpoints
-		mux.HandleFunc("POST /api/memory", memHandler.StoreMemory)
-		mux.HandleFunc("POST /api/memory/search", memHandler.SearchMemory)
+		// Create Middlewares
+		auditMW := AuditMiddleware(auditLogger)
+		policyMW := PolicyMiddleware(evaluator)
+
+		// Mount Memory Engine Endpoints with Middleware
+		mux.Handle("POST /api/memory", auditMW(policyMW(http.HandlerFunc(memHandler.StoreMemory))))
+		mux.Handle("POST /api/memory/search", auditMW(policyMW(http.HandlerFunc(memHandler.SearchMemory))))
+
+		// Mount Policy Endpoints
+		mux.Handle("POST /api/policies", auditMW(http.HandlerFunc(policyHandler.CreatePolicy)))
+		mux.Handle("POST /api/policies/evaluate", auditMW(http.HandlerFunc(policyHandler.EvaluatePolicy)))
+
+		// Mount Audit Endpoints
+		mux.Handle("GET /api/audit", auditMW(http.HandlerFunc(auditHandler.QueryAudit)))
+
+		// Mount GDPR Endpoints
+		mux.Handle("POST /api/gdpr/forget", auditMW(http.HandlerFunc(gdprHandler.RightToForget)))
+		mux.Handle("GET /api/gdpr/export", auditMW(http.HandlerFunc(gdprHandler.ExportData)))
+		mux.Handle("PUT /api/gdpr/rectify", auditMW(http.HandlerFunc(gdprHandler.RectifyData)))
+
+		// Initialize MCP Server
+		mcpServer := mcp.NewServer(pgStore, evaluator)
+		sseServer := mcpServer.SSEServer()
+		// Mark3Labs MCP server usually registers `/sse` and `/message` inside SSEServer.
+		// Alternatively, just expose its ServeHTTP to the base path for MCP.
+		mux.Handle("/mcp/sse", sseServer.SSEHandler())
+		mux.Handle("/mcp/message", sseServer.MessageHandler())
 	}
 }

@@ -9,6 +9,7 @@ import (
 // Store defines the interface for retrieving policies from persistent storage.
 type Store interface {
 	GetPolicies(ctx context.Context, agentDID string) ([]Policy, error)
+	SavePolicy(ctx context.Context, p Policy) error
 }
 
 // Evaluator checks actions against policies.
