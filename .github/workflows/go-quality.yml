@@ -16,7 +16,7 @@ jobs:
     
     services:
       postgres:
-        image: postgres:15
+        image: pgvector/pgvector:pg15
         env:
           POSTGRES_USER: acumius
           POSTGRES_PASSWORD: acumius
@@ -55,9 +55,9 @@ jobs:
         run: make fmt-check
 
       - name: Lint
-        uses: golangci/golangci-lint-action@v6
-        with:
-          version: latest
+        run: |
+          go install github.com/golangci/golangci-lint/cmd/golangci-lint@latest
+          make lint
 
       - name: Test
         run: make test
