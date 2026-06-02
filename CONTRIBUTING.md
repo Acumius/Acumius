@@ -66,12 +66,18 @@ docs(readme): update installation instructions
 
 ## Testing
 
+We take code quality seriously. Like many major open-source projects, we require comprehensive tests for all new features and bug fixes.
+
 ```bash
-make test          # Run all tests
-make test-race     # Run with race detector
+make test          # Run all tests (includes race detector)
+make test-coverage # Run tests and generate an HTML coverage report
 make bench         # Run benchmarks
-make coverage      # Generate coverage report
 ```
+
+**Testing Requirements for PRs:**
+- **Coverage**: Aim for high test coverage (>80%) on new code. Check this locally using `make test-coverage`.
+- **Integration**: If modifying database schemas or cache layers, ensure you write or update corresponding integration tests.
+- **CI/CD**: Our GitHub Actions workflow automatically runs `make check` (which includes `make test` and `make lint`) on every PR. Your PR will be blocked from merging if tests fail or if your code does not pass linting.
 
 ## Migrations
 

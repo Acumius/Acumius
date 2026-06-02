@@ -13,6 +13,27 @@ jobs:
   checks:
     name: fmt-lint-test
     runs-on: ubuntu-latest
+    
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_USER: acumius
+          POSTGRES_PASSWORD: acumius
+          POSTGRES_DB: acumius
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+      valkey:
+        image: valkey/valkey:7.2
+        ports:
+          - 6379:6379
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -23,6 +44,13 @@ jobs:
           go-version-file: go.mod
           cache: true
 
+      - name: Setup Database
+        run: |
+          go install github.com/golang-migrate/migrate/v4/cmd/migrate@latest
+          migrate -path ./migrations -database "postgres://acumius:acumius@localhost:5432/acumius?sslmode=disable" up
+        env:
+          ACUMIUS_DATABASE_URL: "postgres://acumius:acumius@localhost:5432/acumius?sslmode=disable"
+
       - name: Check formatting
         run: make fmt-check
 
@@ -31,3 +59,6 @@ jobs:
 
       - name: Test
         run: make test
+        env:
+          ACUMIUS_DATABASE_URL: "postgres://acumius:acumius@localhost:5432/acumius?sslmode=disable"
+          ACUMIUS_VALKEY_URL: "valkey://localhost:6379"
