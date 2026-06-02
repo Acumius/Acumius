@@ -46,6 +46,20 @@ fix(policy): resolve cache invalidation race
 docs(readme): update installation instructions
 ```
 
+### Developer Certificate of Origin (DCO)
+
+All contributions to this project must be accompanied by a Developer Certificate of Origin. This is a binding statement that asserts that you are the creator of your contribution, and that you have the right to submit it to the project under the open-source license.
+
+To sign off your commits, use the `-s` or `--signoff` flag when committing:
+```bash
+git commit -s -m "feat(core): add semantic memory search"
+```
+
+This will add the following line to your commit message:
+`Signed-off-by: Your Name <your.email@example.com>`
+
+Pull requests with commits that do not include a sign-off will fail the CI checks.
+
 ### Pull Requests
 
 1. Every PR needs at least one review
