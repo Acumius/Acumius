@@ -5,7 +5,10 @@ export default function Dashboard() {
   return (
     <div className="flex flex-col gap-8">
       <div>
-        <h1 className="text-3xl font-bold tracking-tight">Dashboard</h1>
+        <div className="flex items-center gap-4">
+          <img src="/logo.png" alt="Acumius Logo" className="h-10 w-10 object-contain" />
+          <h1 className="text-3xl font-bold tracking-tight">Dashboard</h1>
+        </div>
         <p className="text-muted-foreground mt-2">
           Overview of your Acumius Policy Engine status.
         </p>
