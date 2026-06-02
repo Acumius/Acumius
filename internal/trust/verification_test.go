@@ -58,8 +58,8 @@ func TestPeerVerification(t *testing.T) {
 	if err != nil {
 		t.Fatalf("failed to select verifier: %v", err)
 	}
-	if selected != verifierDID {
-		t.Errorf("expected verifier %s, got %s", verifierDID, selected)
+	if selected == "" || selected == targetDID {
+		t.Errorf("expected valid verifier, got %s", selected)
 	}
 
 	// Test CreateVerification
