@@ -1,7 +1,7 @@
 # Acumius
 
 <p align="center">
-  <img src="https://raw.githubusercontent.com/Acumius/Acumius/main/assets/logo.svg" alt="Acumius" width="120">
+  <img src="docs/assets/logo.png" alt="Acumius" width="200">
 </p>
 
 <p align="center">
