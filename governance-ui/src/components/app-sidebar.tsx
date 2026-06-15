@@ -8,6 +8,7 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar"
+import Image from "next/image"
 import { Home, Database, Bot, Shield, FileText, Lock } from "lucide-react"
 
 // Menu items.
@@ -50,7 +51,7 @@ export function AppSidebar() {
       <SidebarContent>
         <SidebarGroup>
           <SidebarGroupLabel className="flex items-center gap-2 h-14">
-            <img src="/logo.png" alt="Acumius Logo" className="h-8 w-8 object-contain" />
+            <Image src="/logo.png" alt="Acumius Logo" width={32} height={32} className="h-8 w-8 object-contain" />
             <span className="text-lg font-semibold tracking-tight text-primary">Acumius</span>
           </SidebarGroupLabel>
           <SidebarGroupContent>

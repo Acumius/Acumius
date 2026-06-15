@@ -1,3 +1,4 @@
+import Image from "next/image"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Shield, Plus } from "lucide-react"
@@ -12,11 +13,14 @@ export default function PoliciesPage() {
   return (
     <div className="flex flex-col gap-8">
       <div className="flex justify-between items-start">
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight">Policies</h1>
-          <p className="text-muted-foreground mt-2">
-            Manage access control policies for agents and memory namespaces.
-          </p>
+        <div className="flex items-center gap-4">
+          <Image src="/logo.png" alt="Acumius Logo" width={48} height={48} className="rounded-lg object-contain bg-white p-1" />
+          <div>
+            <h1 className="text-3xl font-bold tracking-tight">Policies</h1>
+            <p className="text-muted-foreground mt-2">
+              Manage access control policies for agents and memory namespaces.
+            </p>
+          </div>
         </div>
         <Button>
           <Plus className="mr-2 h-4 w-4" /> Create Policy

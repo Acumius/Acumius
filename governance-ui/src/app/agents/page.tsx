@@ -1,7 +1,7 @@
+import Image from "next/image"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Badge } from "@/components/ui/badge"
-import { Bot, ShieldCheck } from "lucide-react"
 
 export default function AgentDirectory() {
   const agents = [
@@ -13,11 +13,14 @@ export default function AgentDirectory() {
 
   return (
     <div className="flex flex-col gap-8">
-      <div>
-        <h1 className="text-3xl font-bold tracking-tight">Agent Directory</h1>
-        <p className="text-muted-foreground mt-2">
-          Manage registered agents and monitor their reputation scores.
-        </p>
+      <div className="flex items-center gap-4">
+        <Image src="/logo.png" alt="Acumius Logo" width={48} height={48} className="rounded-lg object-contain bg-white p-1" />
+        <div>
+          <h1 className="text-3xl font-bold tracking-tight">Agent Directory</h1>
+          <p className="text-muted-foreground mt-2">
+            Manage registered agents and monitor their reputation scores.
+          </p>
+        </div>
       </div>
 
       <Card>
