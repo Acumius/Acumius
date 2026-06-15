@@ -84,9 +84,8 @@ func (r *Router) StoreWithVerification(ctx context.Context, req StoreRequest, si
 
 	// 6. Record reputation event
 	if r.trust != nil {
-		if err := r.trust.RecordEvent(ctx, req.AgentDID, "memory_store", 5, "Successfully stored memory"); err != nil {
-			// Non-fatal: log but don't fail
-		}
+		// Non-fatal: best-effort reputation event.
+		_ = r.trust.RecordEvent(ctx, req.AgentDID, "memory_store", 5, "Successfully stored memory")
 	}
 
 	return mem, nil

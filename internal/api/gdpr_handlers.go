@@ -66,7 +66,7 @@ func (h *GDPRHandler) ExportData(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Content-Type", "application/json")
 	w.Header().Set("Content-Disposition", `attachment; filename="export.json"`)
-	w.Write(data)
+	_, _ = w.Write(data)
 }
 
 // RectifyData handles POST /api/gdpr/rectify.
@@ -91,5 +91,5 @@ func (h *GDPRHandler) RectifyData(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.WriteHeader(http.StatusOK)
-	json.NewEncoder(w).Encode(map[string]string{"status": "rectified"})
+	_ = json.NewEncoder(w).Encode(map[string]string{"status": "rectified"})
 }

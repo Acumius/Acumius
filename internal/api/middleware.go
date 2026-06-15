@@ -10,6 +10,12 @@ import (
 	"github.com/Acumius/Acumius/internal/policy"
 )
 
+// contextKey is a private type for context keys defined in this package, to
+// avoid collisions with keys defined in other packages.
+type contextKey string
+
+const agentDIDContextKey contextKey = "agent_did"
+
 type responseWriter struct {
 	http.ResponseWriter
 	status int
@@ -84,7 +90,7 @@ func PolicyMiddleware(evaluator *policy.Evaluator) func(http.Handler) http.Handl
 			}
 
 			// Pass the DID to the context
-			ctx := context.WithValue(r.Context(), "agent_did", agentDID)
+			ctx := context.WithValue(r.Context(), agentDIDContextKey, agentDID)
 			next.ServeHTTP(w, r.WithContext(ctx))
 		})
 	}

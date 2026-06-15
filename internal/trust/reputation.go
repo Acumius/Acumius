@@ -56,7 +56,7 @@ func (e *ReputationEngine) LogEvent(ctx context.Context, agentDID string, eventT
 	if err != nil {
 		return fmt.Errorf("failed to begin tx: %w", err)
 	}
-	defer tx.Rollback()
+	defer func() { _ = tx.Rollback() }()
 
 	// Insert reputation event
 	queryEvent := `

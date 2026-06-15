@@ -74,10 +74,8 @@ func (s *ValkeyStore) Store(ctx context.Context, m *Memory) error {
 		return fmt.Errorf("valkey zadd: %w", err)
 	}
 
-	err = s.client.Do(ctx, s.client.B().Zremrangebyrank().Key(latestKey).Start(0).Stop(-1001).Build()).Error()
-	if err != nil {
-		// Ignore
-	}
+	// Best-effort trim of the latest-index set; ignore error.
+	_ = s.client.Do(ctx, s.client.B().Zremrangebyrank().Key(latestKey).Start(0).Stop(-1001).Build()).Error()
 
 	return nil
 }

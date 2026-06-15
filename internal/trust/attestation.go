@@ -59,7 +59,7 @@ func (s *AttestationStore) Save(ctx context.Context, attestation *Attestation) e
 	if err != nil {
 		return fmt.Errorf("failed to begin tx: %w", err)
 	}
-	defer tx.Rollback()
+	defer func() { _ = tx.Rollback() }()
 
 	query := `
 		INSERT INTO attestations (memory_id, agent_did, signature, created_at)
