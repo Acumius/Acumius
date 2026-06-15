@@ -40,7 +40,7 @@ func (h *PolicyHandler) CreatePolicy(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.WriteHeader(http.StatusCreated)
-	json.NewEncoder(w).Encode(map[string]string{"status": "created", "id": req.ID})
+	_ = json.NewEncoder(w).Encode(map[string]string{"status": "created", "id": req.ID})
 }
 
 // EvaluatePolicy handles POST /api/policies/evaluate.
@@ -63,5 +63,5 @@ func (h *PolicyHandler) EvaluatePolicy(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(result)
+	_ = json.NewEncoder(w).Encode(result)
 }

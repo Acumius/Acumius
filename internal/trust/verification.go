@@ -75,7 +75,7 @@ func (s *VerificationStore) SubmitVerificationResult(ctx context.Context, id str
 	if err != nil {
 		return fmt.Errorf("failed to begin tx: %w", err)
 	}
-	defer tx.Rollback()
+	defer func() { _ = tx.Rollback() }()
 
 	// 1. Fetch verification details
 	var targetDID, verifierDID, currentStatus string
