@@ -1,3 +1,4 @@
+import Image from "next/image"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Database, Bot, ShieldAlert, Activity } from "lucide-react"
 
@@ -6,7 +7,7 @@ export default function Dashboard() {
     <div className="flex flex-col gap-8">
       <div>
         <div className="flex items-center gap-4">
-          <img src="/logo.png" alt="Acumius Logo" className="h-10 w-10 object-contain" />
+          <Image src="/logo.png" alt="Acumius Logo" width={40} height={40} className="h-10 w-10 object-contain" />
           <h1 className="text-3xl font-bold tracking-tight">Dashboard</h1>
         </div>
         <p className="text-muted-foreground mt-2">
