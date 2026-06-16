@@ -143,7 +143,6 @@ func (l *Logger) Query(ctx context.Context, filter AuditFilter) ([]Event, int, e
 	if filter.Offset > 0 {
 		query += fmt.Sprintf(" OFFSET $%d", argID)
 		args = append(args, filter.Offset)
-		argID++
 	}
 
 	rows, err := l.db.QueryContext(ctx, query, args...)
@@ -180,9 +179,8 @@ func (l *Logger) Query(ctx context.Context, filter AuditFilter) ([]Event, int, e
 			e.Reason = reason.String
 		}
 		if len(metaBytes) > 0 {
-			if err := json.Unmarshal(metaBytes, &e.Metadata); err != nil {
-				// skip or log error
-			}
+			// Best-effort metadata decode; skip on error.
+			_ = json.Unmarshal(metaBytes, &e.Metadata)
 		}
 		events = append(events, e)
 	}

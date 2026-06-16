@@ -17,10 +17,7 @@ func (s *ValkeyStore) Client() valkey.Client {
 }
 
 func NewValkeyStore(connectionString string) (*ValkeyStore, error) {
-	addr := connectionString
-	if strings.HasPrefix(addr, "valkey://") {
-		addr = strings.TrimPrefix(addr, "valkey://")
-	}
+	addr := strings.TrimPrefix(connectionString, "valkey://")
 
 	client, err := valkey.NewClient(valkey.ClientOption{InitAddress: []string{addr}})
 	if err != nil {

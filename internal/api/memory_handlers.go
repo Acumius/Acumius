@@ -49,7 +49,7 @@ func (h *MemoryHandler) StoreMemory(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusCreated)
-	json.NewEncoder(w).Encode(storedMem)
+	_ = json.NewEncoder(w).Encode(storedMem)
 }
 
 type SearchMemoryRequest struct {
@@ -86,5 +86,5 @@ func (h *MemoryHandler) SearchMemory(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(results)
+	_ = json.NewEncoder(w).Encode(results)
 }

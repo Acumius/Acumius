@@ -23,7 +23,7 @@ func (s *Service) Forget(ctx context.Context, agentDID string) error {
 	if err != nil {
 		return fmt.Errorf("begin tx: %w", err)
 	}
-	defer tx.Rollback()
+	defer func() { _ = tx.Rollback() }()
 
 	// Soft delete memories (compliance retention can run hard delete later if needed)
 	_, err = tx.ExecContext(ctx, "UPDATE memories SET deleted_at = NOW() WHERE agent_did = $1 AND deleted_at IS NULL", agentDID)

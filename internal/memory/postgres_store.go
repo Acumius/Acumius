@@ -200,8 +200,8 @@ func (s *PostgresStore) ListByNamespace(ctx context.Context, namespace string, o
 			return nil, err
 		}
 
-		json.Unmarshal(contentJSON, &m.Content)
-		json.Unmarshal(metadataJSON, &m.Metadata)
+		_ = json.Unmarshal(contentJSON, &m.Content)
+		_ = json.Unmarshal(metadataJSON, &m.Metadata)
 		results = append(results, m)
 	}
 
